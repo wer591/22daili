@@ -1,0 +1,44 @@
+import os
+
+
+def rename_images(folder_path, prefix='aa', start_index=2, sort_option='size'):
+    # 获取文件夹中所有图片文件的列表
+    image_files = [f for f in os.listdir(folder_path) if
+                   os.path.isfile(os.path.join(folder_path, f)) and f.lower().endswith(
+                       ('.png', '.jpg', '.jpeg', '.gif', '.bmp', '.tiff'))]
+
+    # 根据用户选择的排序方式对文件列表进行排序
+    if sort_option == 'name':
+        image_files.sort()
+    elif sort_option == 'size':
+        image_files.sort(key=lambda x: os.path.getsize(os.path.join(folder_path, x)))
+    elif sort_option == 'time':
+        image_files.sort(key=lambda x: os.path.getmtime(os.path.join(folder_path, x)))
+
+    # 重命名图片文件
+    for i, image_file in enumerate(image_files):
+        file_extension = os.path.splitext(image_file)[1]
+        new_name = f"{prefix}_{start_index + i}{file_extension}"
+        new_path = os.path.join(folder_path, new_name)
+        # 检查新的文件名是否已经存在，如果存在则在前面添加数字以区分
+        if os.path.exists(new_path):
+            count = 1
+            while os.path.exists(os.path.join(folder_path, f"{prefix}_{start_index + i}_{count}{file_extension}")):
+                count += 1
+            new_name = f"{prefix}_{start_index + i}_{count}{file_extension}"
+        os.rename(os.path.join(folder_path, image_file), os.path.join(folder_path, new_name))
+        print(f"Renamed {image_file} to {new_name}")
+
+
+# 指定文件夹路径
+folder_path = r'C:\Users\1\Pictures\2'
+# 起始编号和名称
+start_index = 1
+prefix = 'aa'
+
+# 获取用户选择的排序方式，如果用户不输入则按大小排序
+sort_option = input(
+    "请选择排序方式（按时间排序输入'time'，按大小排序输入'size'，按名称排序输入'name'，不输入则按大小排序）：") or 'size'
+
+# 调用函数进行重命名
+rename_images(folder_path, prefix=prefix, start_index=start_index, sort_option=sort_option)
