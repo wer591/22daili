@@ -1,0 +1,40 @@
+import sys
+sys.path.append("D:/pythonproject/light excel/.venv/Lib/site-packages")
+
+import os
+from openpyxl import load_workbook
+from openpyxl.styles import NamedStyle, Font, PatternFill
+
+# 创建聚光灯效果的样式
+spotlight_style = NamedStyle(name="spotlight")
+spotlight_style.font = Font(bold=True)
+spotlight_style.fill = PatternFill("solid", fgColor="FFFF00")
+
+# 指定文件夹路径
+target_folder = r"C:\Users\1\Pictures\2"
+
+# 遍历指定文件夹中的所有文件
+for root, dirs, files in os.walk(target_folder):
+    for file in files:
+        # 检查文件是否为 Excel 文件
+        if file.endswith(".xlsx"):
+            # 构建文件的完整路径
+            file_path = os.path.join(root, file)
+
+            try:
+                # 加载 Excel 文件
+                wb = load_workbook(file_path)
+                ws = wb.active
+
+                # 应用聚光灯效果
+                for row in ws.iter_rows():
+                    for cell in row:
+                        cell.style = spotlight_style
+
+                # 保存修改后的 Excel 文件
+                wb.save(file_path)
+
+                print(f"聚光灯效果已应用到文件：{file_path}")
+
+            except Exception as e:
+                print(f"处理文件时出错：{file_path}，错误信息：{e}")
